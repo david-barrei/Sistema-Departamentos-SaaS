@@ -1,4 +1,4 @@
-El Edificio Conectado 🏢 - Django Multi-Tenant SaaS
+##El Edificio Conectado 🏢 - Django Multi-Tenant SaaS
 
 El Edificio Conectado es una plataforma profesional de gestión inmobiliaria diseñada bajo el modelo SaaS (Software as a Service). Permite a administradores y dueños de edificios gestionar múltiples propiedades, inquilinos y contratos de forma aislada y segura mediante una arquitectura de base de datos multi-esquema.
 🌟 Características Principales
@@ -31,6 +31,7 @@ El Edificio Conectado es una plataforma profesional de gestión inmobiliaria dis
 
 📁 Estructura del Proyecto
 Plaintext
+
 
 ├── apps/
 │   ├── core/           # Lógica central del sistema (Public schema)
