@@ -1,0 +1,71 @@
+{% extends "base.html" %} 
+
+    <!-- Visible content goes here -->
+    {% block contenido %}
+
+    <small class="text-danger">
+        {% if message in messages %}
+            {% for message in messages %}
+             <p style="color: green;">{{ message}}</p>
+            {% endfor %}
+        {% endif %}
+
+    </small>
+
+<div class="container-fluid">
+
+    <div class="card card-primary">
+
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-building mr-1"></i>
+                Crear Edificio
+            </h3>
+        </div>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="card-body">
+
+                <div class="form-group">
+                    <label>Nombre del Edificio</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label>Dirección</label>
+                    {{ form.address }}
+                </div>
+
+                <div class="form-group">
+                    <label>Notas</label>
+                    {{ form.notes }}
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Guardar
+                </button>
+
+                <a href="{% url 'properties:building_list' %}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+

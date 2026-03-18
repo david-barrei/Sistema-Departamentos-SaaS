@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card {% if editing %}card-warning{% else %}card-primary{% endif %} card-outline">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-file-contract mr-2"></i>
+                    {% if editing %} Editando Contrato: {{ unit.code }} {% else %} Nuevo Contrato para: {{ unit.code }} {% endif %}
+                </h3>
+            </div>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label>Inquilino</label>
+                            {{ form.tenant }}
+                            {% if editing %}
+                            <small class="text-muted"><i class="fas fa-info-circle"></i> No se recomienda cambiar el inquilino de un contrato vigente.</small>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Fecha de Inicio</label>
+                            {{ form.start_date }}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Fecha de Fin</label>
+                            {{ form.end_date }}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Renta Mensual ($)</label>
+                            {{ form.monthly_rent }}
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label>Día de Pago</label>
+                            {{ form.pay_day }}
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label>Archivo de Contrato (PDF)</label>
+                            <div class="custom-file">
+                                {{ form.contract_pdf }}
+                            </div>
+                            {% if lease.contract_pdf %}
+                            <p class="mt-2 small text-info">
+                                <i class="fas fa-paperclip"></i> Archivo actual: 
+                                <a href="{{ lease.contract_pdf.url }}" target="_blank">Ver PDF</a>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer text-right">
+                    <a href="{% url 'lease:lease_detail' lease.id %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn {% if editing %}btn-warning{% else %}btn-primary{% endif %}">
+                        {% if editing %}Actualizar Contrato{% else %}Crear Contrato{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            placeholder: "Seleccionar inquilino..."
+        });
+    });
+</script>
+{% endblock %}

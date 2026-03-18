@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block content-header %}
+{% with breadcrumb_title="Grupos de Usuarios"%}
+{{ block.super }} {% endwith %} {% endblock%}
+{% block contenido %}
+<div class="row">
+  <div class="col-12 col-sm-12">
+    <div class="card card-primary card-tabs">
+      <div class="card-header p-0 pt-1">
+        {% if obj %} Editar {% else %} Agregar {% endif %} Grupo de usuarios
+        <div class="card-tools">
+          
+          <button type="button" class="btn btn-tool" data-card-widget="maximize"><i class="fas fa-expend"> </i>
+          </button>
+        </div>
+
+      </div>
+      <div class="card-body">
+        <form method="post" class="form-group">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ obj.name }}">
+          </div>
+            <button type="submit" class="btn bg-danger btn-app"> <i class="fas fa-save"></i> Agregar</button>
+            <button type="reset" class="btn bg-info btn-app"> <i class="fas fa-window-close"></i> Cancelar</button>
+            <a href="{% url "users:groups_list" %} " class=" btn btn-app bg-warning"> <i  class="far fa-hand-point-left"> </i></a>
+
+      </div>
+
+    </div>
+  </div>
+  {% if obj %}
+  <div class="row">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          Permisos del grupo {{obj}} </div>
+        <div class="card-body">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Accion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in permisos_grupo %}
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td> 
+                  <a href="#" class="btn btn-sm text-success" onclick="permiso('{{item.id}}', 'DEL')">
+                    <I class="fas fa-trash"></I>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          Todos los permisos </div>
+        <div class="card-body">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Accion</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in permisos %}
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td> 
+                  <a href="#" class="btn btn-sm text-success" onclick="permiso('{{item.id}}', 'ADD')">
+                    <I class="fas fa-plus"></I>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+  {% endif%}
+  {% endblock %}
+
+
+{% block js %}
+
+{% if obj %}
+<script>
+  function permiso(id,accion){
+    
+    var id_grp = '{{obj.id}}'
+    var token = '{{ csrf_token }}'
+    var data = {"accion":accion,"id":id}
+    var url = "{% url 'users:user_groups_permissions' obj.id %}"
+
+    $.ajax({
+      url: url,
+      type: "POST",
+      headers: {"X-CSRFToken": token},
+      data: data,
+      success: function (data) {
+      mensaje(data.message, "success", "Proceso exitoso", {
+      onConfirm: function(){
+      location.reload();
+    }
+  });
+},
+      error: function (jqXHR, textStatus, errorThrown) {
+        console.log(jqXHR);
+        console.log(textStatus);
+        console.log(errorThrown);
+        mensaje("ERROR AL ENVIAR EL FORMULARIO: " + (errorThrown || textStatus), "error");
+      }
+    });
+
+  }
+ 
+</script>
+
+{% endif %}
+
+{% endblock%}

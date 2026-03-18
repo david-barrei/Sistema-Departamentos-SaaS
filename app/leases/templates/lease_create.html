@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card card-outline card-primary shadow">
+                <div class="card-header">
+                    <h3 class="card-title font-weight-bold">
+                        <i class="fas fa-file-signature mr-1"></i> Configuración de Contrato
+                    </h3>
+                </div>
+
+                <form method="post" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="card-body">
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="text-muted small uppercase font-weight-bold">Información del Arrendatario</label>
+                                <div class="form-group">
+                                    <label>Inquilino <span class="text-danger">*</span></label>
+                                    {{ form.tenant }}
+                                    <small class="text-muted">Busca por nombre </small>
+                                </div>
+                                <hr>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Fecha Inicio</label>
+                                    {{ form.start_date }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Fecha Fin (Opcional)</label>
+                                    {{ form.end_date }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Renta Mensual</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        {{ form.monthly_rent }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Día de Pago</label>
+                                    {{ form.pay_day }}
+                                    <small class="text-muted text-xs">Día del mes para generar cobros</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <hr>
+                                <div class="form-group">
+                                    <label>Contrato Notarizado (PDF)</label>
+                                    <div class="custom-file">
+                                        <input type="file" name="contract_pdf" class="custom-file-input" id="customFile">
+                                        <label class="custom-file-label" for="customFile">Seleccionar archivo...</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white text-right">
+                        <a href="{% url 'properties:unit_list' building_id=unit.building.id %}" class="btn btn-link text-muted">Cancelar</a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-save mr-1"></i> Crear Contrato
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card card-info bg-gradient-info shadow">
+                <div class="card-body">
+                    <h5 class="font-weight-bold"><i class="fas fa-building mr-2"></i> Detalles de Unidad</h5>
+                    <hr class="border-light">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Edificio:</span>
+                        <span class="font-weight-bold">{{ unit.building.name }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Código Unidad:</span>
+                        <span class="badge badge-light px-2">{{ unit.code }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Piso:</span>
+                        <span>{{ unit.floor|default:"PB" }}</span>
+                    </div>
+                    <hr class="border-light">
+                    <p class="small italic">Asegúrate de que la fecha de inicio coincida con la entrega de llaves.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $(document).ready(function() {
+        // Inicializar Select2 con el tema de Bootstrap 4
+        $('.select2').select2({
+            theme: 'bootstrap4',
+            placeholder: "Escribe el nombre del inquilino...",
+            allowClear: true,
+            width: '100%',
+            language: {
+                noResults: function() {
+                    return "No se encontró ningún inquilino con ese nombre";
+                }
+            }
+        });
+        // TIP PRO: Enfocar automáticamente el buscador/cursor al abrir
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+        });
+    });
+
+</script>
+{% endblock %}
+
+
+
+
+
+
+
+

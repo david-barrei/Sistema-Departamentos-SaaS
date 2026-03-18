@@ -1,0 +1,208 @@
+{% extends "base.html" %} {% block contenido %}
+<div class="row">
+  <div class="col-md-12">
+
+      {% if total_deuda > 0 %}
+        <div class="alert alert-danger d-flex align-items-center" role="alert">
+          <i class="fas fa-exclamation-triangle mr-2"></i>
+          <div>
+            Este contrato presenta una deuda pendiente de: <strong>$ {{ total_deuda }}</strong>
+          </div>
+        </div>
+      {% endif %}
+
+    <div class="card mb-4">
+
+      <div class="card-header bg-primary "
+      >
+        <h5 class="card-title mb-0 text-white">
+          <i class="fas fa-file-contract"></i> Información del contrato
+        </h5>
+      
+        <div class="d-flex justify-content-end  align-items-center">
+          {% if lease.status == "active" %}
+          <a
+            href="{% url 'lease:lease_end' lease_id=lease.id %}"
+            class="btn btn-danger btn-sm"
+            onclick="return confirm('¿Seguro que desea finalizar este contrato?');"
+          >
+            <i class="fas fa-ban"></i>
+            Finalizar contrato
+          </a>
+          {% endif %}
+        </div>
+
+      </div>
+
+      <div class="card-body">
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th width="25%">Contrato</th>
+              <td>{{ lease.id }}</td>
+            </tr>
+
+            <tr>
+              <th>Unidad</th>
+              <td>{{ lease.unit.code }}</td>
+            </tr>
+
+            <tr>
+              <th>Inquilino</th>
+              <td>{{ lease.tenant.full_name }}</td>
+            </tr>
+
+            <tr>
+              <th>Renta mensual</th>
+              <td>$ {{ lease.monthly_rent }}</td>
+            </tr>
+
+            <tr>
+              <th>Estado</th>
+              <td>{{ lease.get_status_display }}</td>
+            </tr>
+
+            <tr>
+              <th>Fecha inicio</th>
+              <td>{{ lease.start_date }}</td>
+            </tr>
+
+            <tr>
+              <th>Fecha fin</th>
+              <td>{{ lease.end_date }}</td>
+            </tr>
+
+            <tr>
+              <th>Documento Notarizado</th>
+              <td>
+                {% if lease.contract_pdf %}
+                  <a href="{{ lease.contract_pdf.url }}" target="_blank" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-file-pdf"></i> Ver PDF del Contrato
+                  </a>
+                {% else %}
+                  <span class="text-muted"><i class="fas fa-exclamation-circle"></i> No se ha cargado el archivo</span>
+                {% endif %}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header bg-info">
+        <h5 class="card-title mb-0 text-white">
+          <i class="fas fa-shield-alt"></i> Garantía
+        </h5>
+      </div>
+
+      <div class="card-body">
+        {% if deposit %}
+
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <th width="25%">Monto</th>
+              <td>$ {{ deposit.amount }}</td>
+            </tr>
+
+            <tr>
+              <th>Estado</th>
+              <td>{{ deposit.get_status_display }}</td>
+            </tr>
+
+            <tr>
+              <th>Devuelto</th>
+              <td>$ {{ deposit.returned_amount }}</td>
+            </tr>
+
+            <tr>
+              <th>Notas</th>
+              <td>{{ deposit.notes }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        {% else %}
+
+        <div class="alert alert-warning">No hay garantía registrada.</div>
+
+        <a
+          href="{% url 'billing:deposit_create' lease.id %}"
+          class="btn btn-primary"
+        >
+          Registrar Garantía
+        </a>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header bg-secondary">
+        <h5 class="card-title mb-0 text-white">
+          <i class="fas fa-receipt"></i> Historial de cuotas
+        </h5>
+      </div>
+
+      <div class="card-body">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>Periodo</th>
+              <th>Vence</th>
+              <th>Monto</th>
+              <th>Pagado</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for i in invoices %}
+
+            <tr>
+              <td>{{ i.period|date:"F Y" }}</td>
+
+              <td>{{ i.due_date }}</td>
+
+              <td>$ {{ i.amount }}</td>
+
+              <td>$ {{ i.paid_total }}</td>
+
+              <td>
+                {% if i.status == "paid" %}
+                <span class="badge badge-success">Pagado</span>
+
+                {% elif i.status == "pending" %}
+                <span class="badge badge-warning">Pendiente</span>
+
+                {% elif i.status == "partial" %}
+                <span class="badge badge-info">Parcial</span>
+
+                {% elif i.status == "late" %}
+                <span class="badge badge-danger">Atrasado</span>
+                {% endif %}
+              </td>
+
+              <td>
+                {% if i.status != "paid" %}
+                <a
+                  href="{% url 'billing:payment' i.id %}"
+                  class="btn btn-sm btn-primary"
+                >
+                  Pagar
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

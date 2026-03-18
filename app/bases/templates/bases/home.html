@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="container-fluid">
+
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card card-outline card-primary shadow-sm mb-0">
+        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+          <div>
+            <h3 class="mb-0 font-weight-bold" style="font-size: 1.5rem;">
+              Bienvenido, {{ user.first_name|default:user.username }}
+            </h3>
+            <p class="text-muted mb-0 small">
+              {{ today|date:"l, j \d\e F" }} | Resumen operativo
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4 col-12">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>{{ total_buildings|default:"0" }}</h3>
+          <p>Total edificios</p>
+        </div>
+        <div class="icon"><i class="fas fa-city"></i></div>
+        <a href="{% url 'properties:building_list' %}" class="small-box-footer">Ver más <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-4 col-12">
+      <div class="small-box bg-primary">
+        <div class="inner">
+          <h3>{{ total_units|default:"0" }}</h3>
+          <p>Total unidades</p>
+        </div>
+        <div class="icon"><i class="fas fa-door-open"></i></div>
+        <span class="small-box-footer">{{ units_rented }} rentadas / {{ units_available }} disponibles</span>
+      </div>
+    </div>
+    <div class="col-lg-4 col-12">
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3>{{ occupancy }}<sup style="font-size: 20px">%</sup></h3>
+          <p>Tasa de ocupación</p>
+        </div>
+        <div class="icon"><i class="fas fa-chart-pie"></i></div>
+        <div class="small-box-footer">Rendimiento actual</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4 col-12">
+      <div class="small-box bg-warning">
+        <div class="inner">
+          <h3>{{ leases_expiring_count }}</h3>
+          <p>Contratos por vencer (30d)</p>
+        </div>
+        <div class="icon"><i class="fas fa-file-contract"></i></div>
+        <a href="{% url 'lease:lease_list' %}" class="small-box-footer">Revisar <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-4 col-12">
+      <div class="small-box bg-dark">
+        <div class="inner">
+          <h3>{{ leases_expired_count }}</h3>
+          <p>Contratos finalizados</p>
+        </div>
+        <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <a href="{% url 'lease:lease_list' %}" class="small-box-footer">Ver historial <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+    <div class="col-lg-4 col-12">
+      <div class="small-box bg-secondary">
+        <div class="inner">
+          <h3>${{ month_income|floatformat:2 }}</h3>
+          <p>Ingresos este mes</p>
+        </div>
+        <div class="icon"><i class="fas fa-wallet"></i></div>
+        <a href="{% url 'billing:invoice_list' %}" class="small-box-footer">Ver recaudación <i class="fas fa-arrow-circle-right"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="row d-flex align-items-stretch">
+    
+    <div class="col-lg-3 col-12 mb-3">
+      <div class="card card-outline card-primary shadow-sm h-100 mb-0">
+        <div class="card-header py-2">
+          <h3 class="card-title font-weight-bold small"><i class="fas fa-history mr-1"></i> Actividad</h3>
+        </div>
+        <div class="card-body p-0">
+          <ul class="products-list product-list-in-card pl-2 pr-2">
+            {% for item in recent_activity %}
+            <li class="item py-2">
+              <div class="product-info ml-1">
+                <span class="product-title font-weight-normal" style="font-size: 0.9rem;">{{ item.title }}</span>
+                <span class="product-description small">{{ item.description }}</span>
+              </div>
+            </li>
+            {% empty %}
+            <li class="item text-center p-3 text-muted small">Sin actividad.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3 col-12 mb-3">
+      <div class="card card-outline card-danger shadow-sm h-100 mb-0">
+        <div class="card-header py-2">
+          <h3 class="card-title font-weight-bold small"><i class="fas fa-bell mr-1"></i> Alertas</h3>
+        </div>
+        <div class="card-body p-0">
+          <ul class="products-list product-list-in-card pl-2 pr-2">
+            {% for alert in alerts %}
+            <li class="item py-2">
+              <div class="product-info ml-1">
+                <span class="product-title text-{{ alert.level }} font-weight-bold" style="font-size: 0.85rem;">
+                  <i class="fas fa-exclamation-circle mr-1"></i> {{ alert.title }}
+                </span>
+                <span class="product-description small text-dark">{{ alert.description }}</span>
+              </div>
+            </li>
+            {% empty %}
+            <li class="item text-center p-3 text-muted small">Todo al día.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+   <div class="col-lg-6 col-12 mb-3">
+  <div class="card card-outline card-success shadow-sm h-100">
+    <div class="card-header py-2 d-flex justify-content-between align-items-center">
+      <h3 class="card-title font-weight-bold small"><i class="fas fa-clock mr-1"></i> Cobros Críticos</h3>
+      <a href="{% url 'billing:invoice_list' %}" class="btn btn-xs btn-success font-weight-bold px-2">Gestionar</a>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive" style="overflow-x: auto;">
+        <table class="table table-sm table-hover table-striped mb-0 dashboard-table">
+          <thead class="bg-light">
+            <tr>
+              <th style="width: 10%">U.</th>
+              <th style="width: 45%">Inquilino</th>
+              <th style="width: 15%">Vence</th>
+              <th style="width: 15%">Saldo</th>
+              <th style="width: 15%" class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in action_invoices %}
+            <tr>
+              <td class="align-middle font-weight-bold">{{ i.lease.unit.code }}</td>
+              <td class="align-middle text-truncate">{{ i.lease.tenant.full_name|truncatechars:20 }}</td>
+              <td class="align-middle">{{ i.due_date|date:"d/m" }}</td>
+              <td class="align-middle text-danger font-weight-bold">${{ i.saldo_pendiente|floatformat:0 }}</td>
+              
+              <td class="text-center align-middle">
+                <button 
+                  data-url="{% url 'billing:quick_payment' i.id %}" 
+                  class="btn btn-xs btn-outline-primary btn-quick-pay"
+                  title="Cobro rápido">
+                  <i class="fas fa-dollar-sign"></i>
+                </button>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center p-4 text-muted small">Sin pendientes urgentes.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* FIX DEFINITIVO PARA EL ANCHO */
+  .dashboard-table {
+      width: 100% !important;
+      min-width: 100% !important;
+      table-layout: fixed !important; /* Fuerza a respetar los anchos de columna */
+      margin-bottom: 0 !important;
+  }
+
+  /* Evita que el contenedor responsive limite el ancho en pantallas grandes */
+  @media (min-width: 992px) {
+      .table-responsive {
+          display: block;
+          width: 100%;
+          overflow-x: visible; /* Quita el scroll innecesario en PC */
+      }
+  }
+
+  @media (min-width: 992px) {
+    .d-flex.align-items-stretch {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .product-description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+
+{% block js %}
+<script>
+$(document).on('click', '.btn-quick-pay', function(e) {
+    const btn = $(this);
+    const url = btn.data('url');
+    const row = btn.closest('tr'); // Seleccionamos la fila de la tabla
+
+    Swal.fire({
+        title: 'Registrar Cobro',
+        text: 'Ingrese el monto recibido:',
+        input: 'number',
+        inputAttributes: { min: 0, step: 0.01 },
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar Pago',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#28a745',
+        preConfirm: (amount) => {
+            if (!amount || amount <= 0) {
+                Swal.showValidationMessage('Por favor ingrese un monto válido');
+            }
+            return amount;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Enviamos los datos por AJAX
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    'amount': result.value,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}' // Seguridad de Django
+                },
+                success: function(response) {
+                    // Animación: La fila se pone verde y desaparece
+                    row.css("background-color", "#d4edda"); 
+                    row.fadeOut(800, function() { //se desvanece suavemente, dándole al usuario la sensación de que el trabajo está hecho.
+                        $(this).remove(); // Borramos la fila del HTML
+                        mensaje("Cobro registrado con éxito", "success");
+                    });
+                },
+                error: function(xhr) {
+                    mensaje("Error: " + xhr.responseJSON.message, "error");
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock contenido %}

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block contenido %}
+
+    
+<div class="container-fluid">
+
+    <div class="card card-primary">
+
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-user-plus text-orange mr-1"></i>
+                Crear Inquilino
+            </h3>
+        </div>
+
+        <form method="post">
+
+            {% csrf_token %}
+
+            <div class="card-body">
+
+                <div class="form-group">
+                    <label>Nombres</label>
+                    {{ form.full_name }}
+                </div>
+
+                <div class="form-group">
+                    <label>Dni</label>
+                    {{ form.dni }}
+                </div>
+
+                <div class="form-group">
+                    <label>Telefono</label>
+                    {{ form.phone }}
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    {{ form.email }}
+                </div>
+
+                <div class="form-group">
+                    <label>Contacto de Emergencia</label>
+                    {{ form.emergency_contact }}
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Guardar
+                </button>
+
+                <a href="{% url 'lease:tenant_list' %}" class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+    {% endblock contenido %}
+
+
+

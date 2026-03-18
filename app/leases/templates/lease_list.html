@@ -1,0 +1,52 @@
+
+{% extends "base.html" %} 
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-users mr-2"></i> Directorio de Contratos</h3>
+                <div class="card-tools">
+                  
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="tbl" class=" js-datatable table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Unidad</th>
+                            <th>Inquilino</th>
+                            <th>Renta</th>
+                            <th>Estado</th>
+                            <th>Accion</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in leases %}
+                    <tr>
+                        <td>{{i.unit.code}}</td>
+                        <td>{{i.tenant.full_name}}</td>
+                        <td>{{i.monthly_rent}} </td>
+                        <td>{{i.get_status_display}} </td>  
+                       
+                        <td>            
+                            <a href="{% url "lease:lease_detail" lease_id=i.id %}" class="btn btn-sm btn-info">Detalle </i></a>
+                            
+                            <a href="{% url 'lease:lease_edit' i.pk %}" class="btn btn-sm btn-warning"> Editar </a>
+                            
+                        </td>   
+                        {% endfor %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+

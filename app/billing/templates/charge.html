@@ -1,0 +1,77 @@
+
+{% extends "base.html"%}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">  
+                <div class="card-tools">
+                    <a href="# " class="btn btn-tool"> <i class="far fa-building"> </i></a>
+                    <button type="button" class="btn btn-tool" data-card-widget="maximize">HOLA<i class="fas fa-expend"> </i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="tbl" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Unidad</th>
+                            <th>Inquilino</th>
+                            <th>Periodo</th>
+                            <th>Vence</th>
+                            <th>Monto</th>
+                            <th>Pagado</th>
+                            <th>Estado</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in invoices %}
+                    <tr>
+                        <td> <span class="badge badge-secondary"> {{i.lease.unit.code}} </span></td>
+                        <td><i class="fas fa-user text-muted"></i> {{i.lease.tenant.full_name}}</td>
+                        <td>{{i.period|date:"F Y" }}</td>
+                        <td>{{i.due_date}} </td>
+                        <td>${{i.amount}} </td>
+                        <td>${{i.paid_total}} </td>
+                        <td>
+                            {% if i.status == "pending" %}
+                                <span class="badge badge-warning">{{ i.get_status_display }}</span>
+
+                            {% elif i.status == "partial" %}
+                                <span class="badge badge-info">{{ i.get_status_display }}</span>
+
+                            {% elif i.status == "late" %}
+                                <span class="badge badge-danger">{{ i.get_status_display }}</span>
+
+                            {% elif i.status == "paid" %}
+                                <span class="badge badge-success">{{ i.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url "billing:payment" invoice_id=i.id %}" class="btn btn-sm text-success">Pagar <i class="fas fa-dollar-sign"></i></a>
+                            
+                        </td>
+                    </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">No hay facturas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+

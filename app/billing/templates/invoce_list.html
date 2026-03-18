@@ -1,0 +1,59 @@
+{% extends "base.html"%}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">  
+                <div class="card-tools">
+                    <a href="# " class="btn btn-tool"> <i class="far fa-building"> </i></a>
+                    <button type="button" class="btn btn-tool" data-card-widget="maximize">HOLA<i class="fas fa-expend"> </i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <table id="tbl" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Unidad</th>
+                            <th>Inquilino</th>
+                            <th>Periodo</th>
+                            <th>Due Date</th>
+                            <th>Monto</th>
+                            <th>Status</th>
+                            <th>Accion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in invoices %}
+                    <tr>
+                        <td>{{i.lease.unit.code}}</td>
+                        <td>{{i.lease.tenant.full_name}}</td>
+                        <td>{{i.period}}</td>
+                        <td>{{i.due_date}} </td>
+                        <td>{{i.amount}} </td>
+                        <td>{{i.get_status_display}} </td>
+                        <td>
+                            <a href="{% url "billing:payment" invoice_id=i.id %}" class="btn btn-sm text-success">Pagar <i class="fas fa-edit"> </i></a>
+                            
+                        </td>
+                    </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7">No hay facturas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+
+
+

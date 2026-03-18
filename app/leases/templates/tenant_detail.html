@@ -1,0 +1,103 @@
+
+{% extends "base.html" %}
+
+{% block contenido %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card card-primary card-outline">
+            <div class="card-body box-profile">
+                <div class="text-center">
+                    <img class="profile-user-img img-fluid img-circle"
+                         src="https://ui-avatars.com/api/?name={{ tenant.full_name }}&background=0D6EFD&color=fff"
+                         alt="User profile picture">
+                </div>
+                <h3 class="profile-username text-center">{{ tenant.full_name }}</h3>
+                <p class="text-muted text-center">Inquilino</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                    <li class="list-group-item">
+                        <b>DNI</b> <a class="float-right text-dark">{{ tenant.dni }}</a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Contratos</b> <a class="float-right">{{ tenant.leases.count }}</a>
+                    </li>
+                </ul>
+
+                <a href="{% url 'lease:tenant_edit' tenant.pk %}" class="btn btn-primary btn-block">
+                    <i class="fas fa-edit"></i> <b>Editar Perfil</b>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header p-2">
+                <ul class="nav nav-pills">
+                    <li class="nav-item"><a class="nav-link active" href="#info" data-toggle="tab">Información General</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contracts" data-toggle="tab">Historial de Arriendos</a></li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content">
+                    <div class="active tab-pane" id="info">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <th width="30%">Correo Electrónico</th>
+                                    <td>{{ tenant.email }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Teléfono</th>
+                                    <td>{{ tenant.phone }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha de Registro</th>
+                                    <td>{{ tenant.created_at|date:"d/m/Y" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane" id="contracts">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Unidad</th>
+                                        <th>Inicio</th>
+                                        <th>Fin</th>
+                                        <th>Estado</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for lease in tenant.leases.all %}
+                                    <tr>
+                                        <td>{{ lease.unit.code }}</td>
+                                        <td>{{ lease.start_date }}</td>
+                                        <td>{{ lease.end_date }}</td>
+                                        <td>
+                                            <span class="badge {% if lease.status == 'active' %}badge-success{% else %}badge-secondary{% endif %}">
+                                                {{ lease.get_status_display }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'lease:lease_detail' lease.id %}" class="btn btn-xs btn-info">Ver</a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No tiene contratos registrados.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
